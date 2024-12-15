@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -39,4 +40,7 @@ public class Admin {
 
     @Column(name="role")
     private String role;
+
+    @Column(name="created_at")
+    private LocalDateTime createdAt;
 }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -39,4 +40,6 @@ public class AdminDTO {
     private Set<CookDTO> cooks; // One admin can manage many cooks.
 
     private String role;
+
+    private LocalDateTime createdAt;
 }

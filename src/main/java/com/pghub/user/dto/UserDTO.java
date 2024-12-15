@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class UserDTO {
 
@@ -43,4 +45,6 @@ public class UserDTO {
     private Integer roomNo;
 
     private String role;
+
+    private LocalDateTime createdAt;
 }

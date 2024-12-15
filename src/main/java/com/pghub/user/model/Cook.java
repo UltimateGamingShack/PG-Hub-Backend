@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "cook")
 @NoArgsConstructor
@@ -31,4 +33,7 @@ public class Cook {
 
     @Column(name="role")
     private String role;
+
+    @Column(name="created_at")
+    private LocalDateTime createdAt;
 }

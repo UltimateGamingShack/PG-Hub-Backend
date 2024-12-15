@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class CookDTO {
 
@@ -29,4 +31,6 @@ public class CookDTO {
     private AdminDTO admin; // Many cooks belong to one admin.
 
     private String role;
+
+    private LocalDateTime createdAt;
 }
