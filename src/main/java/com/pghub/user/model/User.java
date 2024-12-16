@@ -19,7 +19,7 @@ public class User {
     private Long id;
 
     @Column(name = "user_name", nullable = false)
-    private String userName;
+    private String name;
 
     @Column(nullable = false)
     private String password;
@@ -27,14 +27,10 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
     @Column(unique = true, nullable = false)
-    private String userPhoneNo;
+    private String phoneNo;
 
     @Column(name = "pg_id", nullable = false)
     private Integer pgId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = false)
-    private Admin admin; // Many users belong to one admin.
 
     @Lob
     @Column(name = "user_image")
@@ -46,9 +42,12 @@ public class User {
     @Column(name = "room_no")
     private Integer roomNo;
 
-    @Column(name="role")
-    private String role;
-
     @Column(name="created_at")
     private LocalDateTime createdAt;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles", joinColumns = {
+            @JoinColumn(name = "id") }, inverseJoinColumns = {
+            @JoinColumn(name = "role_id") })
+    private Set<Role> roles;
 }
