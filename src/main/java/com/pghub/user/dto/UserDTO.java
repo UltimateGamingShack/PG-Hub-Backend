@@ -1,50 +1,43 @@
 package com.pghub.user.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Lob;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 public class UserDTO {
 
-    private Long id;
+    @NotBlank(message = "Username is required")
+    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    private String username;
 
-    @NotBlank(message = "User name cannot be blank")
-    @Size(max = 30, message = "User name must be at most 30 characters")
-    private String userName;
-
-    @NotBlank(message = "Password cannot be blank")
-    @Size(max = 120, message = "Password must be at most 120 characters")
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
-    @NotBlank(message = "Email cannot be blank")
+    @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
-    @Size(max = 50, message = "Email must be at most 50 characters")
     private String email;
 
-    @NotBlank(message = "Phone number cannot be blank")
-    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
-    private String userPhoneNo;
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Phone number must be valid with 10-15 digits")
+    private String phoneNo;
 
-    @NotNull(message = "PG ID cannot be null")
+    @NotNull(message = "PG ID is required")
+    @Min(value = 1, message = "PG ID must be a positive number")
     private Integer pgId;
 
-    private AdminDTO admin; // Many users belong to one admin.
-
+    @Lob
     private String userImage;
 
-    @NotNull(message = "Gender cannot be null")
+    @NotNull(message = "Gender is required")
+    @Pattern(regexp = "^[MFmf]$", message = "Gender must be 'M' or 'F'")
     private Character gender;
 
-    @NotNull(message = "Room number cannot be null")
+    @Min(value = 1, message = "Room number must be a positive integer")
     private Integer roomNo;
 
-    private String role;
-
-    private LocalDateTime createdAt;
+    private Set<Long> roleIds; // IDs of roles assigned to the user
 }

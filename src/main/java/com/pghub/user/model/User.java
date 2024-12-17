@@ -19,7 +19,7 @@ public class User {
     private Long id;
 
     @Column(name = "user_name", nullable = false)
-    private String name;
+    private String username;
 
     @Column(nullable = false)
     private String password;
@@ -50,4 +50,20 @@ public class User {
             @JoinColumn(name = "id") }, inverseJoinColumns = {
             @JoinColumn(name = "role_id") })
     private Set<Role> roles;
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+
+    public User(String username, String email, String password, String phoneNo, Character gender, Integer roomNo) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.phoneNo = phoneNo;
+        this.gender = gender;
+        this.roomNo = roomNo;
+        this.pgId = 1;  // change this according to logic
+    }
 }
