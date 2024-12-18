@@ -40,7 +40,7 @@ public class ExceptionHandling {
 
         ErrorInfo err = new ErrorInfo();
 		err.setErrorCode(HttpStatus.BAD_REQUEST.value());
-		err.setErrorMessage(e.getMessage());
+		err.setErrorMessage(errorMsg);
 		err.setTimestamp(LocalDateTime.now());
 		
 		return new ResponseEntity<ErrorInfo>(err, HttpStatus.BAD_REQUEST);
@@ -57,7 +57,7 @@ public class ExceptionHandling {
 	}
 	
 	@ExceptionHandler(PgHubException.class)
-	public ResponseEntity<ErrorInfo> newgenPolicyExceptionHandler(PgHubException ngae){
+	public ResponseEntity<ErrorInfo> PgHubExceptionHandler(PgHubException ngae){
 		ErrorInfo err = new ErrorInfo();
 		err.setErrorCode(HttpStatus.NOT_FOUND.value());
 		err.setErrorMessage(environment.getProperty(ngae.getMessage()));

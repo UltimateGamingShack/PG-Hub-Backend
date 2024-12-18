@@ -3,10 +3,13 @@ package com.pghub.user.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+
 
 @Entity
 @Table(name = "users")
@@ -34,7 +37,7 @@ public class User {
 
     @Lob
     @Column(name = "user_image")
-    private String userImage;
+    private Byte[] userImage;
 
     @Column(nullable = false)
     private Character gender;
@@ -57,13 +60,18 @@ public class User {
         this.password = password;
     }
 
-    public User(String username, String email, String password, String phoneNo, Character gender, Integer roomNo) {
+    public User(String username, String email, String password, String phoneNo, Character gender, Integer roomNo,Integer pgId) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.phoneNo = phoneNo;
         this.gender = gender;
         this.roomNo = roomNo;
-        this.pgId = 1;  // change this according to logic
+        this.pgId = pgId;  // change this according to logic
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 }

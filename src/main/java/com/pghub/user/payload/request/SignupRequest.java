@@ -25,6 +25,8 @@ public class SignupRequest {
      private Integer roomNo;
     @NotNull
      private String phoneNo;
+    @NotNull
+    private Integer pgId;
 
 
      private Set<String> roles;
