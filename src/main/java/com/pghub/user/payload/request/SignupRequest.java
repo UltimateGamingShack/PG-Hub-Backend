@@ -1,38 +1,38 @@
 package com.pghub.user.payload.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.parameters.P;
 
 import java.util.Set;
  @Getter
  @Setter
 public class SignupRequest {
-    @NotBlank(message = "{username.invalid.empty}")
-    @Size(min = 3, max = 20, message = "{username.invalid.size}")
+    @NotBlank(message = "{username_invalid_empty}")
+    @Size(min = 3, max = 20, message = "{username_invalid_size}")
     private String username;
-    @NotBlank
-    @Size(max = 50)
-    @Email
+    @NotBlank(message = "{email_invalid_empty}")
+    @Size(max = 50, message = "{email_invalid_size}")
+    @Email(message = "{email_invalid_format}")
     private String email;
 
-    @NotNull
+    @NotNull(message = "{gender_invalid_empty}")
+    @Pattern(regexp = "([MFO])", message = "{gender_invalid_choice}")
      private Character gender;
-    @NotNull
+
      private Integer roomNo;
-    @NotNull
+    @NotNull(message = "{phoneNo_invalid_empty}")
+    @Pattern(regexp = "^(?:\\+91|91)?[6-9]\\d{9}$", message = "{phoneNo_invalid_format}")
      private String phoneNo;
-    @NotNull
+    @NotNull(message = "{pgId_invalid_empty}")
     private Integer pgId;
 
 
      private Set<String> roles;
     
-    @NotBlank
-    @Size(min = 6, max = 40)
+    @NotBlank(message = "{password_invalid_empty}")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-={}|;:'\",.<>?/`~]).{8,32}$", message = "{password_invalid_format}")
     private String password;
   
 
