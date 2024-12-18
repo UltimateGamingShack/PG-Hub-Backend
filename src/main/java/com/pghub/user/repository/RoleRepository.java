@@ -4,13 +4,14 @@ package com.pghub.user.repository;
 import com.pghub.user.model.Role;
 import com.pghub.user.model.RoleType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 
 import java.util.Optional;
 
 /**
- * Repository interface for accessing Role entities in the MongoDB database.
- * It extends MongoRepository, providing CRUD operations for Role objects.
+ * Repository interface for accessing Role entities in the Postgresql database.
+ * It extends JpaRepository, providing CRUD operations for Role objects.
  */
 public interface RoleRepository extends JpaRepository<Role, String> {
 

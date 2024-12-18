@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 
 import java.time.LocalDateTime;
@@ -35,9 +36,10 @@ public class User {
     @Column(name = "pg_id", nullable = false)
     private Integer pgId;
 
-    @Lob
+//    @Lob - old bug for postgres -https://stackoverflow.com/questions/60381895/error-column-image-is-of-type-bytea-but-expression-is-of-type-oid-in-postgres
+   // NEVER USE Byte, use byte, :( it took me 3 hours to resolve this issue
     @Column(name = "user_image")
-    private Byte[] userImage;
+    private byte[] userImage;
 
     @Column(nullable = false)
     private Character gender;
@@ -50,7 +52,7 @@ public class User {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles", joinColumns = {
-            @JoinColumn(name = "id") }, inverseJoinColumns = {
+            @JoinColumn(name = "user_id") }, inverseJoinColumns = {
             @JoinColumn(name = "role_id") })
     private Set<Role> roles;
 

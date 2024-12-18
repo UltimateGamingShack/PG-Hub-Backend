@@ -1,7 +1,10 @@
 package com.pghub.user.exception;
-
+/**
+   * This is the custom exception class for PG Hub User Microservice
+ */
 public class PgHubException extends Exception{
-    PgHubException(String message){
+
+    public PgHubException(String message){
         super(message);
     }
 }

@@ -18,7 +18,7 @@ public class SignupRequest {
     private String email;
 
     @NotNull(message = "{gender_invalid_empty}")
-    @Pattern(regexp = "([MFO])", message = "{gender_invalid_choice}")
+//    @Pattern(regexp = "([MFO])", message = "{gender_invalid_choice}")
      private Character gender;
 
      private Integer roomNo;
@@ -28,7 +28,7 @@ public class SignupRequest {
     @NotNull(message = "{pgId_invalid_empty}")
     private Integer pgId;
 
-
+//    @NotNull(message="{roles_invalid_empty}")
      private Set<String> roles;
     
     @NotBlank(message = "{password_invalid_empty}")
