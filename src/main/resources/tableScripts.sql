@@ -1,7 +1,6 @@
 -- Table: users
-drop table if exists users;
 CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY,
     user_name VARCHAR NOT NULL,
     password VARCHAR NOT NULL,
     email VARCHAR NOT NULL UNIQUE,
@@ -14,7 +13,6 @@ CREATE TABLE users (
     CONSTRAINT chk_gender CHECK (gender IN ('M', 'F', 'O'))
 );
 
-drop table if exists roles;
 -- Table: roles
 CREATE TABLE roles (
     id BIGSERIAL PRIMARY KEY,
@@ -22,16 +20,15 @@ CREATE TABLE roles (
     description TEXT
 );
 
-drop table if exists user_roles;
 -- Join table: user_roles
 CREATE TABLE user_roles (
-    user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     role_id BIGINT NOT NULL REFERENCES roles (id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
 );
 
 
-INSERT INTO roles (role_name, description) VALUES
-('ROLE_ADMIN', 'Administrator with full access'),
-('ROLE_USER', 'Standard user with limited access'),
-('ROLE_COOK', 'User responsible for cooking-related tasks');
+INSERT INTO roles (id, role_name, description) VALUES
+(1,'ROLE_ADMIN', 'Administrator with full access'),
+(2,'ROLE_USER', 'Standard user with limited access'),
+(3,'ROLE_COOK', 'User responsible for cooking-related tasks');

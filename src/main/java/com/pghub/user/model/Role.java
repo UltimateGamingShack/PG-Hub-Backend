@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -13,7 +15,7 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name ="role_name", unique = true)

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L; // Serializable version identifier
 
-	private Long id; // Unique identifier for the user
+	private UUID id; // Unique identifier for the user
 	private String username; // Username of the user
 	private String email; // Email address of the user
 
@@ -35,7 +36,7 @@ public class UserDetailsImpl implements UserDetails {
 	 * @param password     The password of the user.
 	 * @param authorities  The collection of user's authorities.
 	 */
-	public UserDetailsImpl(Long id, String username, String email, String password,
+	public UserDetailsImpl(UUID id, String username, String email, String password,
 						   Collection<? extends GrantedAuthority> authorities) {
 		this.id = id; // Set user ID
 		this.username = username; // Set username
@@ -70,7 +71,7 @@ public class UserDetailsImpl implements UserDetails {
 		return authorities; // Return user's authorities
 	}
 
-	public Long getId() {
+	public UUID getId() {
 		return id; // Return user ID
 	}
 
