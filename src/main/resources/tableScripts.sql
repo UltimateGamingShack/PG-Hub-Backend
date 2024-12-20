@@ -22,7 +22,7 @@ CREATE TABLE roles (
     description TEXT
 );
 
-drop table if exists user_roles
+drop table if exists user_roles;
 -- Join table: user_roles
 CREATE TABLE user_roles (
     user_id BIGINT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
