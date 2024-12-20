@@ -1,14 +1,14 @@
 package com.pghub.user.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
-@Data
+
 @Entity
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "roles")
 public class Role {

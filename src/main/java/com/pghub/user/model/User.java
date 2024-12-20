@@ -1,25 +1,24 @@
 package com.pghub.user.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 @NoArgsConstructor
-@Data
 @EntityListeners(AuditingEntityListener.class)
 public class User {
 
@@ -47,6 +46,9 @@ public class User {
     private byte[] userImage;
 
     @Column(nullable = false)
+    private boolean emailVerified;
+
+    @Column(nullable = false)
     private Character gender;
 
     @Column(name = "room_no")
@@ -55,6 +57,10 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreatedDate
     private Instant createdAt;
+
+    @Column(name = "updated_at",nullable = false)
+    @LastModifiedDate
+    private Instant updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_roles", joinColumns = {

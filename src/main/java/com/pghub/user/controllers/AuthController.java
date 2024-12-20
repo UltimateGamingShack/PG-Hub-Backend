@@ -10,6 +10,7 @@ import com.pghub.user.payload.response.MessageResponse;
 import com.pghub.user.repository.RoleRepository;
 import com.pghub.user.repository.UserRepository;
 import com.pghub.user.security.jwt.JwtUtils;
+import com.pghub.user.services.EmailVerificationService;
 import com.pghub.user.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,8 @@ public class AuthController {
 
 	@Autowired
 	PasswordEncoder encoder; // Encoder for password hashing
+	@Autowired
+	EmailVerificationService emailVerificationService;
 
 	@Autowired
 	JwtUtils jwtUtils; // Utility for generating JWT tokens
@@ -145,7 +148,9 @@ public class AuthController {
 
 		// Assign roles to the user and save it to the database
 		user.setRoles(roles);
-		userRepository.save(user);
+		User user1=userRepository.save(user);
+//		System.out.println(user1);
+		emailVerificationService.sendEmailVerificationOtp(user1.getId(), user.getEmail());
 
 		// Return a success message upon successful registration
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
