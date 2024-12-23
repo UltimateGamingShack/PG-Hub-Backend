@@ -150,7 +150,7 @@ public class AuthController {
 		user.setRoles(roles);
 		User user1=userRepository.save(user);
 //		System.out.println(user1);
-		emailVerificationService.sendEmailVerificationOtp(user1.getId(), user.getEmail());
+		emailVerificationService.sendEmailVerificationOtpHTML(user1.getId(), user1.getEmail(),user1.getUsername());
 
 		// Return a success message upon successful registration
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

@@ -36,7 +36,7 @@ public class TestController {
 	 */
 	@GetMapping("/user/{PgId}") // Map GET requests to "/api/test/user"
 	@PreAuthorize("hasRole('USER') or " + // Require USER, MODERATOR, or ADMIN role
-			"hasRole('MODERATOR') or " +
+			"hasRole('COOK') or " +
 			"hasRole('ADMIN')")
 	public ResponseEntity<List<User>> userAccess(@PathVariable Integer PgId) throws PgHubException {
 		List<User> users = userServiceImpl.getUsersByPgIdAndRole(PgId);
@@ -49,7 +49,7 @@ public class TestController {
 	 * @return A string message indicating moderator board content.
 	 */
 	@GetMapping("/mod") // Map GET requests to "/api/test/mod"
-	@PreAuthorize("hasRole('MODERATOR')") // Require MODERATOR role
+	@PreAuthorize("hasRole('COOK')") // Require MODERATOR role
 	public String moderatorAccess() {
 		return "Moderator Board."; // Return a message accessible by moderators
 	}
