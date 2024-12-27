@@ -42,8 +42,10 @@ public class User {
 
 //    @Lob - old bug for postgres -https://stackoverflow.com/questions/60381895/error-column-image-is-of-type-bytea-but-expression-is-of-type-oid-in-postgres
    // NEVER USE Byte, use byte, :( it took me 3 hours to resolve this issue
-    @Column(name = "user_image")
-    private byte[] userImage;
+//    @Column(name = "user_image")
+//    private byte[] userImage;
+@Column(name = "user_image")
+private String userImage;
 
     @Column(nullable = false)
     private boolean emailVerified;

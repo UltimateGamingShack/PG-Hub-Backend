@@ -9,12 +9,13 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repository interface for accessing User entities in the Postgresql database.
  * It extends JpaRepository, providing CRUD operations for User objects.
  */
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
   /**
    * Find a User by their username.

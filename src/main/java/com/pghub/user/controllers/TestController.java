@@ -1,5 +1,6 @@
 package com.pghub.user.controllers;
 
+import com.pghub.user.dto.ImageModel;
 import com.pghub.user.exception.PgHubException;
 import com.pghub.user.model.RoleType;
 import com.pghub.user.model.User;
@@ -12,6 +13,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @CrossOrigin(origins = "*", maxAge = 3600) // Allow cross-origin requests from any origin for 1 hour
 @RestController // Indicate that this class is a REST controller
@@ -64,4 +67,17 @@ public class TestController {
 	public String adminAccess() {
 		return "Admin Board."; // Return a message accessible by admins
 	}
+
+
+	@PostMapping("/upload/{userId}")
+	public ResponseEntity<Map> upload(ImageModel imageModel, @PathVariable UUID userId) {
+		try {
+			User user = userServiceImpl.findById(userId);
+			return userServiceImpl.uploadImage(imageModel, user);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }

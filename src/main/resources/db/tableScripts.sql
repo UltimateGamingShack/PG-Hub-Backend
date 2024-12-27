@@ -6,7 +6,7 @@ CREATE TABLE users (
     email VARCHAR NOT NULL UNIQUE,
     phone_no VARCHAR NOT NULL UNIQUE,
     pg_id INTEGER NOT NULL,
-    user_image BYTEA,
+    user_image VARCHAR,
     gender CHAR(1) NOT NULL,
     room_no INTEGER,
     email_verified BOOLEAN DEFAULT false,
