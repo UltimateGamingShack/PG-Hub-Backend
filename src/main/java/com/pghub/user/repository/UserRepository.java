@@ -63,5 +63,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 //  @Query("SELECT u FROM User u JOIN u.roles r WHERE r.role = :roleType AND u.pgId = :pgId")
 //  List<User> findUsersByRoleAndPgId(@Param("roleType") RoleType roleType, @Param("pgId") Integer pgId);
 //
-
+  @Query("Select u.username from User u where u.id = :id")
+String findUsernameById(@Param("id") UUID id);
 }

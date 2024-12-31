@@ -21,4 +21,7 @@ public interface UserService {
     User findById(UUID userId) throws PgHubException;
 
     ResponseEntity<Map> uploadImage(ImageModel imageModel, User user);
+
+
+    String getSignedImageUrl(UUID userId);
 }

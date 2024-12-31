@@ -1,6 +1,7 @@
 package com.pghub.user.services;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.pghub.user.dto.ImageModel;
 import com.pghub.user.exception.PgHubException;
 import com.pghub.user.model.User;
@@ -43,7 +44,8 @@ public class UserServiceImpl implements UserService{
             options.put("folder", folderName);
             Map uploadedFile = cloudinary.uploader().upload(file.getBytes(), options);
             String publicId = (String) uploadedFile.get("public_id");
-            return cloudinary.url().secure(true).generate(publicId);
+            return publicId;
+            //return cloudinary.url().secure(true).generate(publicId);
 
         }catch (IOException e){
             e.printStackTrace();
@@ -69,18 +71,44 @@ public class UserServiceImpl implements UserService{
             }
 //            Image image = new Image();
 //            image.setName(imageModel.getName());
-            user.setUserImage(uploadFile(imageModel.getFile(), "folder_1"));
+            user.setUserImage(uploadFile(imageModel.getFile(), "PG"+user.getPgId().toString()));
             if(user.getUserImage() == null) {
                 return ResponseEntity.badRequest().build();
             }
+            userRepository.save(user);
 //            imageRepository.save(image);
             return ResponseEntity.ok().body(Map.of("url", user.getUserImage()));
+            // Here, return success message instead of image url
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
-
-
     }
+    @Override
+    public String getSignedImageUrl(UUID userId) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new PgHubException("Service.USER_NOT_FOUND"));
+
+            String publicId = user.getUserImage(); // Get the public_id from the user entity
+
+            // Calculate expiration timestamp in seconds
+            String signedUrl = cloudinary.url()
+                    .secure(true)
+                    .signed(true)
+                    .resourceType("image")
+                    .publicId(publicId)
+                    .generate();
+
+            return signedUrl;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Return an error message or handle exception as needed
+        }
+    }
+public String getUsernameById(UUID userId){
+        return userRepository.findUsernameById(userId);
+}
 
 }

@@ -7,11 +7,17 @@ import com.pghub.user.model.User;
 import com.pghub.user.services.UserService;
 import com.pghub.user.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -22,6 +28,8 @@ import java.util.UUID;
 public class TestController {
 	@Autowired
 	UserServiceImpl userServiceImpl;
+//	@Autowired
+//	Principal principal;
 	/**
 	 * Public endpoint that can be accessed without any authentication.
 	 *
@@ -68,7 +76,9 @@ public class TestController {
 		return "Admin Board."; // Return a message accessible by admins
 	}
 
-
+	@PreAuthorize("hasRole('USER') or " + // Require USER, MODERATOR, or ADMIN role
+			"hasRole('COOK') or " +
+			"hasRole('ADMIN')")
 	@PostMapping("/upload/{userId}")
 	public ResponseEntity<Map> upload(ImageModel imageModel, @PathVariable UUID userId) {
 		try {
@@ -77,6 +87,56 @@ public class TestController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+
+//	@GetMapping("/image/{userId}")
+//	public ResponseEntity<?> getUserImage(@PathVariable UUID userId,Principal principal) {
+//		try {
+//			// Verify the logged-in user matches the userId (authorization)
+//			String loggedInUserId = principal.getName();
+//			String userName = userServiceImpl.getUsernameById(userId);   // getting username by user ID (can be optimized somehow)
+//			if (!userName.equals(loggedInUserId)) {
+//				return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized access");
+//			}
+//
+//			// Fetch the signed URL
+//			String signedUrl = userServiceImpl.getSignedImageUrl(userId);
+//
+//			// Return the signed URL or stream the image (optional)
+//			return ResponseEntity.ok(Map.of("url", signedUrl));
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching image");
+//		}
+//	}
+@PreAuthorize("hasRole('USER') or " + // Require USER, MODERATOR, or ADMIN role
+		"hasRole('COOK') or " +
+		"hasRole('ADMIN')")
+	@GetMapping("/image-proxy/{userId}")
+	public ResponseEntity<InputStreamResource> serveImage(@PathVariable UUID userId, Principal principal) {
+		try {
+			String loggedInUserId = principal.getName();
+			String userName = userServiceImpl.getUsernameById(userId);   // getting username by user ID (can be optimized somehow)
+			if (!userName.equals(loggedInUserId)) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);  // change the logic here or the function parameters
+			}
+//
+			// Authenticate and authorize user (similar to previous code)
+			// Fetch the signed URL
+			String signedUrl = userServiceImpl.getSignedImageUrl(userId);
+
+			// Fetch the image content from the signed URL
+			URL url = new URL(signedUrl);
+			InputStream inputStream = url.openStream();
+
+			// Stream the image to the client
+			return ResponseEntity.ok()
+					.contentType(MediaType.IMAGE_JPEG) // Adjust as needed
+					.body(new InputStreamResource(inputStream));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
 
