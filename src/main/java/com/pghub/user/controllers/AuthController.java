@@ -1,5 +1,7 @@
 package com.pghub.user.controllers;
 
+import com.pghub.user.dto.AuthenticationResponseDto;
+import com.pghub.user.model.RefreshToken;
 import com.pghub.user.model.Role;
 import com.pghub.user.model.RoleType;
 import com.pghub.user.model.User;
@@ -7,13 +9,17 @@ import com.pghub.user.payload.request.LoginRequest;
 import com.pghub.user.payload.request.SignupRequest;
 import com.pghub.user.payload.response.JwtResponse;
 import com.pghub.user.payload.response.MessageResponse;
+import com.pghub.user.repository.RefreshTokenRepository;
 import com.pghub.user.repository.RoleRepository;
 import com.pghub.user.repository.UserRepository;
 import com.pghub.user.security.jwt.JwtUtils;
+import com.pghub.user.services.AuthenticationService;
 import com.pghub.user.services.EmailVerificationService;
 import com.pghub.user.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,16 +27,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600) // Allow cross-origin requests for all origins
 @RestController // Indicate that this class is a REST controller
 @RequestMapping("/api/auth") // Base URL for authentication-related endpoints
 public class AuthController {
+
 
 	@Autowired
 	AuthenticationManager authenticationManager; // Handles user authentication
@@ -49,6 +60,14 @@ public class AuthController {
 	@Autowired
 	JwtUtils jwtUtils; // Utility for generating JWT tokens
 
+	@Autowired
+	AuthenticationService authenticationService;
+
+	@Autowired
+	RefreshTokenRepository refreshTokenRepository;
+
+
+
 	/**
 	 * Authenticate user and return a JWT token if successful.
 	 *
@@ -59,30 +78,37 @@ public class AuthController {
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
 		// Authenticate the user with the provided username and password
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
-						loginRequest.getPassword()));
-
-		// Set the authentication in the security context
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-
-		// Generate JWT token based on the authentication
-		String jwt = jwtUtils.generateJwtToken(authentication);
-
-		// Get user details from the authentication object
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-		// Extract user roles into a list
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
-				.collect(Collectors.toList());
+//		Authentication authentication = authenticationManager.authenticate(
+//				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+//						loginRequest.getPassword()));
+//
+//		// Set the authentication in the security context
+//		SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//		// Generate JWT token based on the authentication
+//		String jwt = jwtUtils.generateJwtToken(authentication);
+//
+//		// Get user details from the authentication object
+//		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+//
+//		// Extract user roles into a list
+//		List<String> roles = userDetails.getAuthorities().stream()
+//				.map(item -> item.getAuthority())
+//				.collect(Collectors.toList());
+//
+//		User user = userRepository.findByUsername(((UserDetailsImpl) authentication.getPrincipal()).getUsername())
+//                .orElseThrow(() ->
+//                        new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+//
+//		RefreshToken refreshToken = new RefreshToken();
+//		refreshToken.setUser(user);
+//		refreshToken.setExpiresAt(Instant.now().plus(refreshTokenTtl));		// REFRESH TOKEN GENERATED HERE
+//		refreshTokenRepository.save(refreshToken);
 
 		// Return a response containing the JWT and user details
-		return ResponseEntity.ok(new JwtResponse(jwt,
-				userDetails.getId(),
-				userDetails.getUsername(),
-				userDetails.getEmail(),
-				roles));
+		JwtResponse jwt = authenticationService.authenticate(loginRequest);
+
+		return ResponseEntity.ok(jwt);
 	}
 
 	/**
@@ -155,4 +181,20 @@ public class AuthController {
 		// Return a success message upon successful registration
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
+
+	@PostMapping("/refresh-token")
+	public ResponseEntity<AuthenticationResponseDto> refreshToken(
+			@RequestParam UUID refreshToken
+	) {
+		AuthenticationResponseDto response =
+				authenticationService.refreshToken(refreshToken);
+		return ResponseEntity.ok(response);
+	}
+
+	@PostMapping("/logout")
+	public ResponseEntity<Void> revokeToken(@RequestParam UUID refreshToken) {
+		authenticationService.revokeRefreshToken(refreshToken);
+		return ResponseEntity.noContent().build();
+	}
+
 }

@@ -48,6 +48,17 @@ public class JwtUtils {
             .compact(); // Compact the JWT into a string
   }
 
+  public String generateToken(final String username) {
+    // Get the user details from the authentication object
+    // Build and return the JWT token
+    return Jwts.builder()
+            .setSubject((username)) // Set the subject (username)
+            .setIssuedAt(new Date()) // Set the issue date
+            .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)) // Set the expiration date
+            .signWith(key(), SignatureAlgorithm.HS256)
+            // Sign the token using the secret key and algorithm
+            .compact(); // Compact the JWT into a string
+  }
   /**
    * Create a signing key from the JWT secret.
    *

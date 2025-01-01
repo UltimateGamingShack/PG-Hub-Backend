@@ -3,7 +3,6 @@ package com.pghub.user.controllers;
 
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
-import com.pghub.user.dto.AuthenticationResponseDto;
 import com.pghub.user.dto.EmailVerificationRequestDto;
 import com.pghub.user.security.jwt.JwtUtils;
 import com.pghub.user.services.EmailVerificationService;

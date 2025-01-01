@@ -1,6 +1,7 @@
 package com.pghub.user.services;
 
 
+import com.pghub.user.dto.AuthenticationResponseDto;
 import com.pghub.user.model.User;
 import com.pghub.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		// Return UserDetails implementation for the found user
 		return UserDetailsImpl.build(user);
 	}
-
 
 
 
