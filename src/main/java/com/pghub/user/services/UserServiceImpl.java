@@ -1,14 +1,14 @@
 package com.pghub.user.services;
 
 import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.pghub.user.dto.ImageModel;
 import com.pghub.user.exception.PgHubException;
+import com.pghub.user.model.Role;
+import com.pghub.user.model.RoleType;
 import com.pghub.user.model.User;
 import com.pghub.user.repository.UserRepository;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,23 +61,26 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public ResponseEntity<Map> uploadImage(ImageModel imageModel, User user) {
+    public String uploadImage(ImageModel imageModel, User user) {
         try {
 //            if (imageModel.getName().isEmpty()) {
 //                return ResponseEntity.badRequest().build();
 //            }
             if (imageModel.getFile().isEmpty()) {
-                return ResponseEntity.badRequest().build();
+                throw new PgHubException("Service.IMAGE_EMPTY");
+//                return ResponseEntity.badRequest().build();
             }
 //            Image image = new Image();
 //            image.setName(imageModel.getName());
             user.setUserImage(uploadFile(imageModel.getFile(), "PG"+user.getPgId().toString()));
             if(user.getUserImage() == null) {
-                return ResponseEntity.badRequest().build();
+                throw new PgHubException("Service.IMAGE_UPLOAD_ERROR");
+//                return ResponseEntity.badRequest().build();
             }
             userRepository.save(user);
 //            imageRepository.save(image);
-            return ResponseEntity.ok().body(Map.of("url", user.getUserImage()));
+//            return ResponseEntity.ok().body(Map.of("url", user.getUserImage()));
+            return user.getUserImage();
             // Here, return success message instead of image url
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,13 +88,15 @@ public class UserServiceImpl implements UserService{
         }
     }
     @Override
-    public String getSignedImageUrl(UUID userId) {
+    public String getSignedImageUrl(UUID userId) throws PgHubException{
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new PgHubException("Service.USER_NOT_FOUND"));
 
             String publicId = user.getUserImage(); // Get the public_id from the user entity
-
+            if(publicId == null || publicId.isEmpty()){
+                throw new PgHubException("Service.USER_IMAGE_NOT_FOUND");
+            }
             // Calculate expiration timestamp in seconds
             String signedUrl = cloudinary.url()
                     .secure(true)
@@ -102,7 +107,11 @@ public class UserServiceImpl implements UserService{
 
             return signedUrl;
 
-        } catch (Exception e) {
+        }
+        catch(PgHubException pge){
+                throw pge;
+        }
+        catch (Exception e) {
             e.printStackTrace();
             return null; // Return an error message or handle exception as needed
         }
@@ -110,5 +119,20 @@ public class UserServiceImpl implements UserService{
 public String getUsernameById(UUID userId){
         return userRepository.findUsernameById(userId);
 }
-
+    public List<User> getUsersByPgIdAndRoleName(String pgId, String roleName) throws PgHubException {
+        if(pgId == null || roleName==null || pgId.isEmpty() || roleName.isEmpty()){
+            throw new PgHubException("Service.PG_ID_OR_ROLE_EMPTY");
+        }
+        RoleType role = RoleType.ROLE_USER;
+        if(roleName.equals("admin")){
+            role = RoleType.ROLE_ADMIN;
+        }else if(roleName.equals("cook")){
+            role = RoleType.ROLE_COOK;
+        }else if(roleName.equals("user")){
+            role = RoleType.ROLE_USER;
+        }else{
+            throw new PgHubException("Service.INVALID_ROLE");
+        }
+        return userRepository.findUsersByPgIdAndRoleName(pgId, role);
+    }
 }

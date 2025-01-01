@@ -7,6 +7,7 @@ import com.pghub.user.model.User;
 import com.pghub.user.services.UserService;
 import com.pghub.user.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,9 @@ import java.util.UUID;
 public class TestController {
 	@Autowired
 	UserServiceImpl userServiceImpl;
+
+    @Autowired
+    Environment environment;
 //	@Autowired
 //	Principal principal;
 	/**
@@ -80,10 +84,10 @@ public class TestController {
 			"hasRole('COOK') or " +
 			"hasRole('ADMIN')")
 	@PostMapping("/upload/{userId}")
-	public ResponseEntity<Map> upload(ImageModel imageModel, @PathVariable UUID userId) {
+	public ResponseEntity<String> upload(ImageModel imageModel, @PathVariable UUID userId) {
 		try {
 			User user = userServiceImpl.findById(userId);
-			return userServiceImpl.uploadImage(imageModel, user);
+			return new ResponseEntity<>(userServiceImpl.uploadImage(imageModel, user), HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -139,5 +143,20 @@ public class TestController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 	}
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/users/{pgId}/{role}")
+    public ResponseEntity<List<User>> getUsersByPgIdAndRoleName(
+            @PathVariable String pgId,
+            @PathVariable String role
+    ) throws PgHubException {
+        List<User> users = userServiceImpl.getUsersByPgIdAndRoleName(pgId, role);
+        if(users==null || users.isEmpty()){
+            throw new PgHubException("Service.USERS_NOT_FOUND");
+        }
+
+//        String message = environment.getProperty("API.Users_Get")
+        return new ResponseEntity<>(users,HttpStatus.OK);
+    }
 
 }

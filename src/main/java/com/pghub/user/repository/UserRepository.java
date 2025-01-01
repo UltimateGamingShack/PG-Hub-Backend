@@ -1,6 +1,7 @@
 package com.pghub.user.repository;
 
 
+import com.pghub.user.model.Role;
 import com.pghub.user.model.RoleType;
 import com.pghub.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -65,4 +66,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 //
   @Query("Select u.username from User u where u.id = :id")
 String findUsernameById(@Param("id") UUID id);
+
+  @Query("SELECT u FROM User u JOIN u.roles r WHERE u.pgId = :pgId AND r.role = :roleName")
+  List<User> findUsersByPgIdAndRoleName(@Param("pgId") String pgId, @Param("roleName") RoleType roleName);
 }
+

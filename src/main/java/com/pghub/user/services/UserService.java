@@ -2,13 +2,10 @@ package com.pghub.user.services;
 
 import com.pghub.user.dto.ImageModel;
 import com.pghub.user.exception.PgHubException;
-import com.pghub.user.model.RoleType;
 import com.pghub.user.model.User;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 public interface UserService {
@@ -20,8 +17,8 @@ public interface UserService {
 
     User findById(UUID userId) throws PgHubException;
 
-    ResponseEntity<Map> uploadImage(ImageModel imageModel, User user);
+    String uploadImage(ImageModel imageModel, User user);
 
 
-    String getSignedImageUrl(UUID userId);
+    String getSignedImageUrl(UUID userId) throws PgHubException;
 }

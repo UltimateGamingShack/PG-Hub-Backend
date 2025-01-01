@@ -6,15 +6,16 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import jakarta.validation.ConstraintViolationException;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.*;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
@@ -22,13 +23,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @Autowired
+    Environment environment;
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -99,5 +104,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(problemDetail, INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(PgHubException.class)
+        public ResponseEntity<ErrorInfo> pgHubExceptionHandler(PgHubException pghe){
+        ErrorInfo err = new ErrorInfo();
+        err.setErrorCode(HttpStatus.NOT_FOUND.value());
+        err.setErrorMessage(environment.getProperty(pghe.getMessage()));
+        err.setTimestamp(LocalDateTime.now());
+        return new ResponseEntity<ErrorInfo>(err, HttpStatus.NOT_FOUND);
+
+    }
+
 
 }
